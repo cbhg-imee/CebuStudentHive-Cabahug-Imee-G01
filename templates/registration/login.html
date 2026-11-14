@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Log in · Cebu Student Hive{% endblock %}
+{% block layout %}<main class="container py-4"><div class="row justify-content-center"><div class="col-12 col-md-8 col-lg-5"><div class="card shadow-sm"><div class="card-body p-4">
+  <h1 class="h4 mb-1">Log in</h1>
+  <p class="text-body-secondary">Welcome back to the Hive.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "includes/form_errors.html" %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    {% for field in form %}{% include "includes/form_field.html" with field=field %}{% endfor %}
+    <button type="submit" class="btn btn-primary w-100">Log in</button>
+  </form>
+  <p class="text-center small mt-3 mb-0">New to the Hive? <a href="{% url 'accounts:signup' %}">Create an account</a></p>
+</div></div></div></div></main>{% endblock %}

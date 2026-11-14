@@ -1,0 +1,27 @@
+<div class="comment-node">
+  <div class="d-flex justify-content-between align-items-start">
+    <div class="small"><strong>{{ c.author.display_name }}</strong> <span class="text-body-secondary">{{ c.created_at|timesince }} ago</span></div>
+    {% if c.child_list %}
+      <button class="btn btn-sm btn-link comment-toggle p-0" type="button" data-bs-toggle="collapse" data-bs-target="#replies-{{ c.pk }}" aria-expanded="true" aria-controls="replies-{{ c.pk }}">
+        <i class="bi bi-chevron-expand"></i> {{ c.child_list|length }} repl{{ c.child_list|length|pluralize:"y,ies" }}
+      </button>
+    {% endif %}
+  </div>
+  <p class="mb-1">{{ c.body|linebreaksbr }}</p>
+  <button class="btn btn-link btn-sm p-0 comment-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#reply-form-{{ c.pk }}" aria-expanded="false">Reply</button>
+  <div class="collapse mt-1" id="reply-form-{{ c.pk }}">
+    <form method="post" action="{% url 'dashboard:comment' post.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="parent" value="{{ c.pk }}">
+      <div class="input-group input-group-sm">
+        <input class="form-control" name="body" maxlength="1000" required placeholder="Write a reply" aria-label="Reply">
+        <button class="btn btn-primary" type="submit">Reply</button>
+      </div>
+    </form>
+  </div>
+  {% if c.child_list %}
+    <div class="collapse show comment-children" id="replies-{{ c.pk }}">
+      {% for child in c.child_list %}{% include "includes/comment.html" with c=child post=post %}{% endfor %}
+    </div>
+  {% endif %}
+</div>

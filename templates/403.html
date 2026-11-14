@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}403 · Cebu Student Hive{% endblock %}
+{% block layout %}
+<main class="container py-5 text-center" style="max-width:560px">
+  <div class="display-1 fw-bold text-body-secondary">403</div>
+  <h1 class="h3">Access denied</h1>
+  <p class="text-body-secondary">Your role doesn't have access to this page.</p>
+  <a class="btn btn-primary" href="{% url 'root' %}">Back to your home</a>
+</main>
+{% endblock %}
