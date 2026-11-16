@@ -3,57 +3,53 @@
 **Repository:** `CebuStudentHive-Cabahug-Imee-G1`
 **Author:** Imee Cabahug 
 
-A Reddit-style platform where Cebu college and university students discover, submit, and peer-verify student discounts, quiet study spots, campus workshops/events, and scholarships. Admins moderate submissions.
+Cebu Student Hive is a community platform where Cebu college and university students discover, share, and verify local student discounts, quiet study spots, campus workshops and events, and scholarships. Students confirm each other's posts with votes and comments, and admins review submissions before they appear in the feed.
 
-**Stack:** Django, Bootstrap 5.3 (CDN) with Bootstrap Icons, vanilla JavaScript, Supabase (PostgreSQL). 
+**Stack:** Django, Bootstrap 5.3 (CDN) with Bootstrap Icons, vanilla JavaScript, Supabase (PostgreSQL).
 
 ## Features
-- Email-only login (`USERNAME_FIELD = 'email'`, no username), custom `CustomUserManager`
+- Email-only authentication (`USERNAME_FIELD = 'email'`) with a custom user manager
 - Signup, login, and POST-only logout with Bootstrap alerts
-- Roles `STUDENT` and `ADMIN`, role-based redirect after login, strict role guards with a custom `403.html`
-- Profile page (`UpdateView`, `get_object()` returns `request.user`)
-- Student feed with Card/Compact toggle, optimistic up/downvotes (saved to the server), collapsible threaded comments
-- Admin dashboard with KPI cards and an approve/reject queue
-- Light/dark theme (`data-bs-theme`), remembered in the browser
+- Two roles, `STUDENT` and `ADMIN`, with role-based redirects and a custom `403.html` for blocked access
+- Profile page where users edit only their own details
+- Student feed with Card/Compact view toggle, instant up/downvotes, and collapsible threaded comments
+- Admin dashboard with KPI cards and an approve/reject moderation queue
+- Light and dark themes
 
 ## Setup
 
-### 1. Clone and install
+### 1. Install
 ```bash
-git clone <your-repo-url> CebuStudentHive-Cabahug-Imee-G1
+git clone <repo-url>
 cd CebuStudentHive-Cabahug-Imee-G1
 python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Create the Supabase database
+### 2. Supabase database
 1. Create a project at <https://supabase.com> and save the database password.
-2. Open **Project Settings → Database → Connection string** and copy the **URI** (the session pooler URI works on IPv4 networks).
-3. Replace `[YOUR-PASSWORD]` in it with your database password. URL-encode special characters.
+2. Open **Connect** (or **Project Settings → Database**) and copy the **Session pooler** URI.
+3. Replace `[YOUR-PASSWORD]` in the URI with your database password.
 
-### 3. Configure `.env`
+### 3. Environment variables
 ```bash
 cp .env.example .env
 ```
-Set `SECRET_KEY` and `DATABASE_URL`. Generate a key with:
-```bash
-python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"
-```
+Edit `.env` and set `SECRET_KEY` and `DATABASE_URL`.
 
-### 4. Migrate
+### 4. Migrate and create an admin
 ```bash
-python manage.py makemigrations accounts dashboard   # skip if a migrations/ folder already exists
 python manage.py migrate
-python manage.py createsuperuser                      # email + password; role is set to ADMIN
-python manage.py seed_hive                            # optional: demo student and sample posts
+python manage.py createsuperuser
+python manage.py seed_hive      # optional: adds sample posts
 ```
 
 ### 5. Run
 ```bash
 python manage.py runserver
 ```
-Open <http://127.0.0.1:8000/>. Run tests with `python manage.py test` (it needs a database your `DATABASE_URL` user can create test databases in).
+Open <http://127.0.0.1:8000/>.
 
 ## Routes
 | Path | Who | Purpose |
@@ -62,10 +58,5 @@ Open <http://127.0.0.1:8000/>. Run tests with `python manage.py test` (it needs 
 | `/accounts/profile/` | logged in | Edit your own profile |
 | `/dashboard/` | STUDENT | Community feed |
 | `/dashboard/admin/` | ADMIN | Moderation and analytics |
-| `/django-admin/` | staff | Django admin |
 
-## Notes
-- Public sign-up always creates `STUDENT` accounts. Create admins with `createsuperuser` or by changing a user's role in `/django-admin/`.
-- Profile photos are saved to the local `media/` folder. Use Supabase Storage or another object store when deploying.
-- The custom 404 page renders when `DEBUG=False`.
-- The seeded demo account is for development only.
+Sign-ups always create `STUDENT` accounts. Admins are created with `createsuperuser`.
