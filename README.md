@@ -1,11 +1,11 @@
 # Cebu Student Hive
 
 **Repository:** `CebuStudentHive-Cabahug-Imee-G1`
-**Author:** Imee Cabahug (Group 1)
+**Author:** Imee Cabahug 
 
 A Reddit-style platform where Cebu college and university students discover, submit, and peer-verify student discounts, quiet study spots, campus workshops/events, and scholarships. Admins moderate submissions.
 
-**Stack:** Django, Bootstrap 5.3 (CDN) with Bootstrap Icons, vanilla JavaScript, Supabase (PostgreSQL). No React, Vue, Tailwind, HTMX, or Alpine.
+**Stack:** Django, Bootstrap 5.3 (CDN) with Bootstrap Icons, vanilla JavaScript, Supabase (PostgreSQL). 
 
 ## Features
 - Email-only login (`USERNAME_FIELD = 'email'`, no username), custom `CustomUserManager`
@@ -68,4 +68,4 @@ Open <http://127.0.0.1:8000/>. Run tests with `python manage.py test` (it needs 
 - Public sign-up always creates `STUDENT` accounts. Create admins with `createsuperuser` or by changing a user's role in `/django-admin/`.
 - Profile photos are saved to the local `media/` folder. Use Supabase Storage or another object store when deploying.
 - The custom 404 page renders when `DEBUG=False`.
-- The seeded demo account is for development only. Delete it before deploying.
+- The seeded demo account is for development only.

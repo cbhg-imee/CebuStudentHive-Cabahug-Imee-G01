@@ -1,17 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Your profile · Cebu Student Hive{% endblock %}
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body p-4">
-    <div class="d-flex align-items-center gap-3 mb-4">
+<div class="card shadow-sm overflow-hidden">
+  <div class="profile-banner"></div>
+  <div class="card-body p-4 p-lg-5 pt-0">
+    <div class="d-flex align-items-end gap-3 mb-4">
       {% if user.profile_photo %}
-        <img src="{{ user.profile_photo.url }}" alt="Your profile photo" class="rounded-circle" width="72" height="72" style="object-fit:cover">
+        <img src="{{ user.profile_photo.url }}" alt="Your profile photo" class="profile-avatar">
       {% else %}
-        <i class="bi bi-person-circle text-body-secondary" style="font-size:72px;line-height:1"></i>
+        <span class="profile-avatar">{% if user.first_name or user.last_name %}{{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}{% else %}{{ user.email|slice:":1"|upper }}{% endif %}</span>
       {% endif %}
-      <div>
-        <h1 class="h4 mb-0">Your profile</h1>
-        <span class="text-body-secondary">{{ user.email }} · {{ user.get_role_display }}</span>
+      <div class="pb-1">
+        <h1 class="h4 fw-bold mb-1">Your profile</h1>
+        <span class="text-body-secondary">{{ user.email }}</span>
+        <span class="badge badge-role {% if user.is_admin_role %}is-admin{% endif %} ms-1">{{ user.get_role_display }}</span>
       </div>
     </div>
     <form method="post" enctype="multipart/form-data" novalidate>
@@ -28,7 +30,7 @@
       </div>
       {% include "includes/form_field.html" with field=form.bio %}
       {% include "includes/form_field.html" with field=form.profile_photo %}
-      <button type="submit" class="btn btn-primary">Save changes</button>
+      <button type="submit" class="btn btn-primary px-4 mt-2">Save changes</button>
     </form>
   </div>
 </div>
