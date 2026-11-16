@@ -13,9 +13,9 @@
   <script>try{var t=localStorage.getItem("hive-theme");if(t)document.documentElement.setAttribute("data-bs-theme",t);}catch(e){}</script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg sticky-top bg-body border-bottom">
-  <div class="container-fluid px-3">
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'root' %}">
+<nav class="navbar navbar-expand-lg sticky-top hive-nav border-bottom">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2 me-lg-4" href="{% url 'root' %}">
       <i class="bi bi-hexagon-fill brand-mark"></i> Cebu Student Hive
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav" aria-controls="topnav" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,30 +23,42 @@
     </button>
     <div class="collapse navbar-collapse" id="topnav">
       {% if user.is_authenticated %}
-      <form class="navbar-search mx-lg-auto my-2 my-lg-0" role="search" method="get"
+      <form class="search-pill mx-lg-auto my-3 my-lg-0" role="search" method="get"
             action="{% if user.is_admin_role %}{% url 'dashboard:admin_panel' %}{% else %}{% url 'dashboard:home' %}{% endif %}">
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-search"></i></span>
           <input type="search" class="form-control" name="q" value="{{ q|default:'' }}" placeholder="Search deals, spots, events, scholarships" aria-label="Search">
-          <button class="btn btn-outline-secondary" type="submit">Search</button>
         </div>
       </form>
       {% else %}<div class="mx-auto"></div>{% endif %}
 
-      <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="d-flex align-items-center gap-2 ms-lg-3">
         {% if user.is_authenticated %}
-          <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#submitModal">
-            <i class="bi bi-plus-lg"></i> Submit Deal/Event
+          <button type="button" class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#submitModal">
+            <i class="bi bi-plus-lg"></i> Submit
           </button>
         {% endif %}
         <button type="button" id="theme-toggle" class="btn btn-outline-secondary btn-sm" aria-label="Switch theme"><i class="bi bi-moon-stars"></i></button>
         {% if user.is_authenticated %}
-          <span class="badge {% if user.is_admin_role %}text-bg-warning{% else %}text-bg-success{% endif %}">{{ user.get_role_display }}</span>
-          <a class="btn btn-outline-secondary btn-sm" href="{% url 'accounts:profile' %}"><i class="bi bi-person-circle"></i> Profile</a>
-          <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Log out</button>
-          </form>
+          <div class="dropdown">
+            <button class="user-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account menu">
+              {% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" class="nav-avatar" alt="">
+              {% else %}<span class="nav-avatar nav-initials">{% if user.first_name or user.last_name %}{{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}{% else %}{{ user.email|slice:":1"|upper }}{% endif %}</span>{% endif %}
+              <span class="badge badge-role {% if user.is_admin_role %}is-admin{% endif %}">{{ user.get_role_display }}</span>
+              <i class="bi bi-chevron-down small"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li class="px-3 py-2"><div class="fw-semibold">{{ user.display_name }}</div><div class="small text-body-secondary">{{ user.email }}</div></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person-circle me-2"></i>My Profile</a></li>
+              <li>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Log out</button>
+                </form>
+              </li>
+            </ul>
+          </div>
         {% else %}
           <a class="btn btn-outline-secondary btn-sm" href="{% url 'accounts:login' %}">Log in</a>
           <a class="btn btn-primary btn-sm" href="{% url 'accounts:signup' %}">Sign up</a>

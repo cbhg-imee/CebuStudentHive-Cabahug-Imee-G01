@@ -1,14 +1,27 @@
 {% extends "base.html" %}
 {% block title %}Log in · Cebu Student Hive{% endblock %}
-{% block layout %}<main class="container py-4"><div class="row justify-content-center"><div class="col-12 col-md-8 col-lg-5"><div class="card shadow-sm"><div class="card-body p-4">
-  <h1 class="h4 mb-1">Log in</h1>
-  <p class="text-body-secondary">Welcome back to the Hive.</p>
-  <form method="post" novalidate>
-    {% csrf_token %}
-    {% include "includes/form_errors.html" %}
-    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
-    {% for field in form %}{% include "includes/form_field.html" with field=field %}{% endfor %}
-    <button type="submit" class="btn btn-primary w-100">Log in</button>
-  </form>
-  <p class="text-center small mt-3 mb-0">New to the Hive? <a href="{% url 'accounts:signup' %}">Create an account</a></p>
-</div></div></div></div></main>{% endblock %}
+{% block layout %}
+<main class="auth-wrap">
+  <div class="auth-card">
+    <aside class="auth-brand d-none d-md-flex" aria-hidden="true">
+      <i class="bi bi-hexagon-fill brand-hex"></i>
+      <div>
+        <h2>Welcome Back!</h2>
+        <p>Discover verified student deals, study spots &amp; campus events in Cebu.</p>
+      </div>
+    </aside>
+    <section class="auth-form p-4 p-md-5 d-flex flex-column justify-content-center">
+      <h1 class="h2 fw-bold mb-1">Log in</h1>
+      <p class="text-body-secondary mb-4">Welcome back! Enter your email and password to continue.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% include "includes/form_errors.html" %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        {% for field in form %}{% include "includes/form_field.html" with field=field %}{% endfor %}
+        <button type="submit" class="btn btn-primary w-100 mt-2">Log in</button>
+      </form>
+      <p class="text-center small text-body-secondary mt-4 mb-0">New to the Hive? <a class="fw-semibold" href="{% url 'accounts:signup' %}">Create an account</a></p>
+    </section>
+  </div>
+</main>
+{% endblock %}
