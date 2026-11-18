@@ -4,10 +4,10 @@ from django.db.models import Count, OuterRef, Q, Subquery, Sum
 from django.db.models.functions import Coalesce
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, UpdateView, DeleteView
 
 from accounts.models import User
 from accounts.views import role_home
@@ -118,17 +118,13 @@ class ModeratePostView(AdminRequiredMixin, View):
         return redirect("dashboard:admin_panel")
 
 
-class SubmitPostView(LoginRequiredMixin, View):
+class SubmitPostView(StudentRequiredMixin, View):
     def post(self, request):
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
-            if request.user.role == User.Role.ADMIN:
-                post.status, post.reviewed_at = Post.Status.APPROVED, timezone.now()
-                messages.success(request, "Published.")
-            else:
-                messages.success(request, "Submitted. An admin will review it before it appears in the feed.")
+            messages.success(request, "Submitted. An admin will review it before it appears in the feed.")
             post.save()
         else:
             errs = "; ".join(f"{f}: {e[0]}" for f, e in form.errors.items())
@@ -168,3 +164,39 @@ class CommentView(LoginRequiredMixin, View):
         else:
             messages.error(request, "Write something before posting a comment.")
         return redirect(f"{reverse('dashboard:home')}#post-{post.pk}")
+
+
+class MySubmissionsView(StudentRequiredMixin, ListView):
+    template_name = "dashboard/my_submissions.html"
+    context_object_name = "posts"
+    paginate_by = 20
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user)
+
+
+class SubmissionUpdateView(StudentRequiredMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = "dashboard/submission_form.html"
+    success_url = reverse_lazy("dashboard:my_submissions")
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user, status=Post.Status.PENDING)
+
+    def form_valid(self, form):
+        messages.success(self.request, "Submission updated. It remains pending admin review.")
+        return super().form_valid(form)
+
+
+class SubmissionDeleteView(StudentRequiredMixin, DeleteView):
+    model = Post
+    template_name = "dashboard/submission_confirm_delete.html"
+    success_url = reverse_lazy("dashboard:my_submissions")
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user, status=Post.Status.PENDING)
+
+    def form_valid(self, form):
+        messages.success(self.request, "Pending submission deleted.")
+        return super().form_valid(form)

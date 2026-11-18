@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Edit Submission · Cebu Student Hive{% endblock %}
+{% block content %}<h1 class="h4 mb-3">Edit Pending Submission</h1><form method="post" class="card card-body">{% csrf_token %}{{ form.as_p }}<div><button class="btn btn-primary" type="submit">Save changes</button> <a class="btn btn-outline-secondary" href="{% url 'dashboard:my_submissions' %}">Cancel</a></div></form>{% endblock %}
