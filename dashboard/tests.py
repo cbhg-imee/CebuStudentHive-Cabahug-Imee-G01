@@ -100,3 +100,80 @@ class SubmissionCrudTests(TestCase):
         self.client.force_login(self.owner)
         self.client.post(reverse("dashboard:submit"), {"title": " a ", "body": "   ", "category": "STUDY"})
         self.assertEqual(Post.objects.count(), 1)
+
+
+class SubmissionVerificationTests(TestCase):
+
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            email="verification-admin@example.com",
+            password="TestPassword123!",
+            role=User.Role.ADMIN,
+        )
+
+        self.student = User.objects.create_user(
+            email="verification-student@example.com",
+            password="TestPassword123!",
+            role=User.Role.STUDENT,
+        )
+
+        self.post = Post.objects.create(
+            author=self.student,
+            title="Student Discount",
+            body="A discount available for students.",
+            category=Post.Category.DISCOUNT,
+            status=Post.Status.PENDING,
+        )
+
+    def moderate(self, action):
+        return self.client.post(
+            reverse(
+                "dashboard:moderate",
+                args=[self.post.pk, action],
+            )
+        )
+
+    def test_admin_can_approve_pending_post(self):
+        self.client.force_login(self.admin)
+
+        response = self.moderate("approve")
+
+        self.assertEqual(response.status_code, 302)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.status, Post.Status.APPROVED)
+        self.assertIsNotNone(self.post.reviewed_at)
+
+    def test_admin_can_reject_pending_post(self):
+        self.client.force_login(self.admin)
+
+        response = self.moderate("reject")
+
+        self.assertEqual(response.status_code, 302)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.status, Post.Status.REJECTED)
+
+    def test_admin_cannot_moderate_twice(self):
+        self.client.force_login(self.admin)
+
+        self.moderate("approve")
+        response = self.moderate("reject")
+
+        self.assertEqual(response.status_code, 404)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.status, Post.Status.APPROVED)
+
+    def test_student_cannot_moderate_post(self):
+        self.client.force_login(self.student)
+
+        response = self.moderate("approve")
+
+        self.assertEqual(response.status_code, 403)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.status, Post.Status.PENDING)
+
+    def test_invalid_moderation_action_returns_404(self):
+        self.client.force_login(self.admin)
+
+        response = self.moderate("invalid")
+
+        self.assertEqual(response.status_code, 404)
