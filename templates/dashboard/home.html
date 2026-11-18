@@ -13,6 +13,7 @@
   </div>
 </div>
 
+<p><a class="btn btn-outline-primary btn-sm" href="{% url 'dashboard:my_submissions' %}">View my submissions</a></p>
 <div id="feed">
 {% for post in posts %}
   <article class="card hive-post mb-4" id="post-{{ post.pk }}">

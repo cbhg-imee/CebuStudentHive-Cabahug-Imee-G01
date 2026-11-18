@@ -1,6 +1,6 @@
 # Cebu Student Hive
 
-**Repository:** `CebuStudentHive-Cabahug-Imee-G1`
+**Repository:** `CebuStudentHive-Cabahug-Imee-G01`
 **Author:** Imee Cabahug 
 
 Cebu Student Hive is a community platform where Cebu college and university students discover, share, and verify local student discounts, quiet study spots, campus workshops and events, and scholarships. Students confirm each other's posts with votes and comments, and admins review submissions before they appear in the feed.
