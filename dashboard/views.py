@@ -110,11 +110,27 @@ class ModeratePostView(AdminRequiredMixin, View):
     def post(self, request, pk, action):
         if action not in ("approve", "reject"):
             raise Http404
-        post = get_object_or_404(Post, pk=pk)
-        post.status = Post.Status.APPROVED if action == "approve" else Post.Status.REJECTED
+
+        post = get_object_or_404(
+            Post,
+            pk=pk,
+            status=Post.Status.PENDING,
+        )
+
+        post.status = (
+            Post.Status.APPROVED
+            if action == "approve"
+            else Post.Status.REJECTED
+        )
+
         post.reviewed_at = timezone.now()
         post.save(update_fields=["status", "reviewed_at"])
-        messages.success(request, f"“{post.title}” {post.get_status_display().lower()}.")
+
+        messages.success(
+            request,
+            f"“{post.title}” {post.get_status_display().lower()}."
+        )
+
         return redirect("dashboard:admin_panel")
 
 
